@@ -11,9 +11,10 @@ const users = [
 // GET /api/users/[id] - 特定のユーザーを取得
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = parseInt(params.id)
+  const { id } = await params
+  const userId = parseInt(id)
   const user = users.find(u => u.id === userId)
 
   if (!user) {
@@ -32,10 +33,11 @@ export async function GET(
 // PUT /api/users/[id] - ユーザー情報を更新
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = parseInt(params.id)
+    const { id } = await params
+    const userId = parseInt(id)
     const userIndex = users.findIndex(u => u.id === userId)
 
     if (userIndex === -1) {
@@ -70,9 +72,10 @@ export async function PUT(
 // DELETE /api/users/[id] - ユーザーを削除
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const userId = parseInt(params.id)
+  const { id } = await params
+  const userId = parseInt(id)
   const userIndex = users.findIndex(u => u.id === userId)
 
   if (userIndex === -1) {

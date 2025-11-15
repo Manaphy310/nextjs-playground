@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -11,7 +11,8 @@ interface User {
   role: string
 }
 
-export default function UserDetailPage({ params }: { params: { id: string } }) {
+export default function UserDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -21,12 +22,12 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchUser()
-  }, [params.id])
+  }, [id])
 
   const fetchUser = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/users/${params.id}`)
+      const response = await fetch(`/api/users/${id}`)
       const result = await response.json()
 
       if (result.success) {
@@ -49,7 +50,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch(`/api/users/${params.id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm)
@@ -73,7 +74,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
     if (!confirm('本当に削除しますか？')) return
 
     try {
-      const response = await fetch(`/api/users/${params.id}`, {
+      const response = await fetch(`/api/users/${id}`, {
         method: 'DELETE'
       })
 
@@ -219,7 +220,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
       <div className="card" style={{ marginTop: '2rem', backgroundColor: '#f0f8ff' }}>
         <h3>💡 このページで学べること</h3>
         <ul style={{ marginLeft: '1.5rem', marginTop: '0.5rem', lineHeight: '2' }}>
-          <li><strong>動的ルーティング:</strong> URLパラメータ（<code>{params.id}</code>）を使用</li>
+          <li><strong>動的ルーティング:</strong> URLパラメータ（<code>{id}</code>）を使用</li>
           <li><strong>CRUD操作:</strong> Read（取得）、Update（更新）、Delete（削除）を実装</li>
           <li><strong>フォーム処理:</strong> Reactの状態管理を使用した編集機能</li>
           <li><strong>APIとの連携:</strong> fetch APIを使用したHTTPリクエスト</li>
